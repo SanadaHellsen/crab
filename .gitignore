@@ -22,3 +22,5 @@
 *.M51
 *.__i
 Crab
+*.uvgui.*
+*.bak
