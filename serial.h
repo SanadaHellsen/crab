@@ -38,7 +38,11 @@ Fosc (MHz) 11.0592
 extern volatile char serial_buf[2][SBUFN];
 extern volatile int  serial_i[2];
 
+#ifdef SDCC
 void serial_isr (void) __interrupt (4);
+#else
+//void serial_isr (void) interrupt 4;
+#endif
 void serial_init(void (*callback)(int));
 void serial_putchar(char c);
 int serial_getchar(void);

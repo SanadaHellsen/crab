@@ -16,3 +16,9 @@
 *.out
 *.app
 *.plg
+*.OBJ
+*.LST
+*.lnp
+*.M51
+*.__i
+Crab
