@@ -5,8 +5,10 @@
 #endif
 
 #include <string.h>
-#include "serial.h"
+#include "adc.h"
 #include "pwm.h"
+#include "serial.h"
+
 
 char buffer[25];
 char i;
@@ -69,9 +71,15 @@ void serial_cb(int c) {
 
 int main(void)
 {
+    unsigned char adc_value;
+    
     // 1/0.02 = 50
     pwm_init(50);
+    adc_init();
     serial_init(serial_cb);
-    while(1);
+    pwm_start(666);
+    while(1) {
+        //adc_value = adc_read();
+    }
     return 0;
 }

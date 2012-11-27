@@ -5,16 +5,12 @@
 #endif
 
 #include "interrupt.h"
+#include "pwm.h"
 
-//>>> int(11.059e6/12)
-//921583
-
-#define CPUSEC 921583
-
-static unsigned char pwm;
-static unsigned int t0;
-static unsigned int pwm_period;
-static unsigned int pwm_on;
+static unsigned char    pwm;
+static unsigned int     pwm_tw0;
+static unsigned int     pwm_period;
+static unsigned char    pwm_on;
 
 void pwm_isr(void) interrupt 1
 {
@@ -24,20 +20,20 @@ void pwm_isr(void) interrupt 1
     P0_0 = !pwm;
     
     if(pwm) {
-        t0 = (0xffff - pwm_period + pwm_on);        
+        pwm_tw0 = (0xffff - pwm_period + pwm_on);        
     } else {
-        t0 = (0xffff - pwm_on);
+        pwm_tw0 = (0xffff - pwm_on);
     }
-        
-    pwm = !pwm;
 
-    TH0 = (t0 >> 8) & 0xff;
-    TL0 = (t0 >> 0) & 0xff;
-        
+    TH0 = (pwm_tw0 >> 8) & 0xff;
+    TL0 = (pwm_tw0 >> 0) & 0xff;
+
+    pwm = !pwm;
+            
     TR0 = 1;
 }
 
-void pwm_init(unsigned int period)
+void pwm_init(unsigned int period_ticks)
 {
     TMOD &= 0xf0;
     TMOD |= 0x01;
@@ -48,28 +44,26 @@ void pwm_init(unsigned int period)
     ET0 = 1;
     EA = 1;
     
-    pwm_period = CPUSEC/period;
+    pwm_period = CPU_SEC_TICKS/period_ticks;
 }
 
-void pwm_start(unsigned int duty)
+void pwm_start(unsigned int duty_ticks)
 {
-    pwm_on = CPUSEC/duty;
-    // ON = T - a + x
-    // OFF = T - x
+    pwm_on = CPU_SEC_TICKS/duty_ticks;
     
-    t0 = (0xffff - pwm_on);
-    TH0 = (t0 >> 8) & 0xff;
-    TL0 = (t0 >> 0) & 0xff;
+    pwm_tw0 = (0xffff - pwm_on);
+    
+    TH0 = (pwm_tw0 >> 8) & 0xff;
+    TL0 = (pwm_tw0 >> 0) & 0xff;
     
     pwm = 1;
+    
     ET0 = 1;
     TR0 = 1;
 }
 
 void pwm_stop(void)
 {
-    ET0 = 0;
-    ET0 = 0;
     ET0 = 0;
     TR0 = 0;
 }
