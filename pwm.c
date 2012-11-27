@@ -4,6 +4,7 @@
 #include <regx51.h>
 #endif
 
+#include "io.h"
 #include "interrupt.h"
 #include "pwm.h"
 
@@ -17,7 +18,7 @@ void pwm_isr(void) interrupt 1
     TR0 = 0;
 
 
-    P0_0 = !pwm;
+    PWM_BIT = !pwm;
     
     if(pwm) {
         pwm_tw0 = (0xffff - pwm_period + pwm_on);        

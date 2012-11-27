@@ -4,14 +4,11 @@
 #include <regx51.h>
 #endif
 
+#include "io.h"
+
 void adc_init(void) {
 }
 
 unsigned char adc_read(void) {
-    unsigned char wr, intr = 0, port = 0;
-    wr = 1;
-    wr = 0;
-    while(intr);
-    
-    return port;
+    return ADC_PORT;
 }

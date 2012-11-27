@@ -24,3 +24,6 @@
 Crab
 *.uvgui.*
 *.bak
+*.SRC
+*._ia
+*.hex
