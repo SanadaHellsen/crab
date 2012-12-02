@@ -5,63 +5,108 @@
 #endif
 
 #include <string.h>
+#include "types.h"
+
 #include "adc.h"
-#include "delay.h"
+#include "pid.h"
 #include "pwm.h"
 #include "serial.h"
 
-typedef struct decimal {
-    signed int n;
-    signed int d;
-} decimal_t;
+static pid_t pid;
 
-static char buffer[25];
-static char i;
+enum cmd_type {
+    PID_CMD,
+    UNKNOWN_CMD
+};
 
-static signed int pid_y;
-static decimal_t pid_kp = {1, 1};
-static decimal_t pid_ki = {1, 1};
-static decimal_t pid_kd = {1, 1};
+typedef struct cmd {
+    unsigned char header[3];
+    enum cmd_type type;
+    unsigned char key[15];
+    unsigned char value[15];
+} cmd_t;
 
+static decimal_t adc_k  = {1, 1};
 
+void command_execute(char *);
+unsigned char command_parse(cmd_t *, char *);
+
+unsigned char command_parse(cmd_t *cmd, char *string)
+{
+    //unsigned char i;
+    unsigned char *key, *value;
+    
+    // HHTKKK...=VVV...
+    memcpy(cmd->header, string, 2);
+    cmd->header[2] = '\0';
+    
+    if(strcmp(cmd->header, "SB")) {
+        return 0;
+    }
+    
+    switch(string[2]) {
+    case 'P':
+    case 'p':
+        cmd->type = PID_CMD;
+    default:
+        cmd->type = UNKNOWN_CMD;
+    }
+    
+    key = &string[3];
+    value = key;
+    while(*value && *value != '=') {
+        value++;
+    }
+    value = '\0';
+    value++;
+    
+    strcpy(cmd->key, key);
+    strcpy(cmd->value, value);
+    
+    return 1;
+}
+
+void command_execute(char *string)
+{
+    cmd_t cmd;
+    
+    if(!command_parse(&cmd, string)) {
+        return;
+    }
+    
+    switch(cmd.type) {
+    case PID_CMD:
+        pid_tune(&pid, cmd.key, cmd.value);
+        break;
+    default:
+        break;
+    }
+}
+
+#define BUF_LEN 25
 void serial_cb(int c) {
-    char *p;
+    static unsigned char i = 0;
+    static unsigned char buffer[BUF_LEN];
 
-    if(i < 24) {
-        buffer[i] = c;
-        if('\r' == c || '\n' == c) {
-            buffer[i] = '\0';
-            p = buffer;
-            
-            if(buffer[0] == 'S' && buffer[1] == 'B') {
-                while(*p) {
-                    serial_putchar(*p);
-                    p++;
-                }
-                serial_putchar('\r');
-                serial_putchar('\n');
-            }
-
-		    i = 0;
-        } else {
-            i++; // Don't forget to increase the "pointer".
-        }
-    } else {
+    if(i >= BUF_LEN) {
+        i = 0;
+    }
+    
+    buffer[i] = c;
+    
+    if('\r' == c || '\n' == c) {
+        buffer[i] = '\0';
+        command_execute(buffer);
 	    i = 0;
-	}
+    } else {
+        i++;
+    }
 }
 
 int main(void)
 {
     unsigned char adc_v;
-    decimal_t adc_k;
-    signed int pid_v;
-    signed int pid_pe;
-    signed int pid_e;
-    signed int pid_i;
-    signed int pid_d;
-    signed int pid_sp;
-    decimal_t pid_dt;
+    signed int pid_v, pid_y;
     
     /*
     666
@@ -71,36 +116,19 @@ int main(void)
     // 1/0.02 = 50
     pwm_init(50);
     adc_init();
+    pid_init(&pid);
     serial_init(serial_cb);
     
     pwm_start(666);
     
-    pid_pe = 0;
-    pid_i = 0;
-    pid_sp = 10;
-    pid_dt.n = 1;
-    pid_dt.d = 1000;
-    adc_k.n = 1;
-    adc_k.d = 1;
-    
     while(1) {
         adc_v = adc_read();
         pid_v = (adc_k.n * adc_v) / adc_k.d;
-        
-        pid_e  = pid_sp - pid_v;
-        pid_i += (pid_dt.n * pid_e) / pid_dt.d;
-        pid_d  = (pid_dt.d * (pid_e - pid_pe)) / pid_dt.n;
-        
-        pid_y  = 0;
-        pid_y += (pid_kp.n * pid_e) / pid_kp.d;
-        pid_y += (pid_ki.n * pid_i) / pid_ki.d;
-        pid_y += (pid_kd.n * pid_d) / pid_kd.d;
-        
-        pid_pe = pid_e;
-        
+        pid_y = pid_process(&pid, pid_v);
         pwm_start(666 + pid_y);
-        
-        delay_1ms();
     }
+    
+    pwm_stop();
+    
     return 0;
 }

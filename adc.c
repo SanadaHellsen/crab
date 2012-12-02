@@ -7,8 +7,9 @@
 #include "io.h"
 
 void adc_init(void) {
+    ADCB = 0xff; // Set port as input
 }
 
 unsigned char adc_read(void) {
-    return ADC_PORT;
+    return ADCB;
 }

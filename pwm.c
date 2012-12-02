@@ -18,7 +18,7 @@ void pwm_isr(void) interrupt 1
     TR0 = 0;
 
 
-    PWM_BIT = !pwm;
+    PWMb = !pwm;
     
     if(pwm) {
         pwm_tw0 = (0xffff - pwm_period + pwm_on);        

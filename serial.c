@@ -42,6 +42,7 @@ void serial_init(void (*callback)(int))
     TH1 =   SBR_9600;
     TL1 =   SBR_9600;
     ES  =   1;
+    ET1 = 0;
     EA  =   1;
 
     s_callback = callback;

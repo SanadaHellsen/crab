@@ -1,2 +1,2 @@
-#define ADC_PORT P2
-#define PWM_BIT P1_1
+#define ADCB P2
+sbit PWMb = P0^0;  
