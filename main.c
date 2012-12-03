@@ -8,7 +8,6 @@
 #include "types.h"
 
 #include "adc.h"
-//#include "delay.h"
 #include "pid.h"
 #include "pwm.h"
 #include "serial.h"
@@ -31,6 +30,7 @@ static cmd_t cmd;
 volatile unsigned char serial_rx = 0;
 volatile unsigned char bi = 0;
 volatile unsigned char buffer[BUFLEN];
+static unsigned char *msg_ok = "OK\r\n";
 
 void command_execute(char *);
 unsigned char command_parse(char *);
@@ -50,7 +50,6 @@ unsigned char command_parse(char *string)
     
     switch(string[2]) {
     case 'P':
-    case 'p':
         cmd.type = PID_CMD;
         break;
     default:
@@ -80,10 +79,7 @@ void command_execute(char *string)
         return;
     }
     
-    serial_putchar('O');
-    serial_putchar('K');
-    serial_putchar('\r');
-    serial_putchar('\n');
+    serial_puts(msg_ok);
 
     switch(cmd.type) {
     case PID_CMD:
@@ -110,26 +106,24 @@ void serial_cb(int c) {
     }
 }
 
-int main(void)
+void main(void)
 {
-//    unsigned char adc_v;
-//    signed int pid_v, pid_y;
+    unsigned char adc_v;
+    signed int pid_v, pid_y;
     
     /*
     666
     800
     571
     */
-    // 1/0.02 = 50
-    serial_init(serial_cb);
+    // 1/0.02ms = 50 // PWM
+
     adc_init();
     pid_init();
     pwm_init(50);
+    serial_init(serial_cb);
     
-    serial_putchar('O');
-    serial_putchar('K');
-    serial_putchar('\r');
-    serial_putchar('\n');
+    serial_puts(msg_ok);
 
     pwm_start(666);
     
@@ -138,13 +132,10 @@ int main(void)
             command_execute(buffer);
             serial_rx = 0;
         }
-        //adc_v = adc_read();
-        //pid_v = (adc_k.n * adc_v) / adc_k.d;
-        //pid_y = pid_process(pid_v);
-        //pwm_start(666 + pid_y);
+
+        adc_v = adc_read();
+        pid_v = (adc_k.n * adc_v) / adc_k.d;
+        pid_y = pid_process(pid_v);
+        pwm_start(666 + pid_y);
     }
-    
-    //pwm_stop();
-    
-    return 0;
 }

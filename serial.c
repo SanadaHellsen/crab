@@ -63,10 +63,9 @@ void serial_putchar(char c)
     while(serial_tx);
 }
 
-void putchar(char c)
+void serial_puts(unsigned char *s)
 {
-    serial_tx = 1;
-    SBUF = c;
-    while(serial_tx);
+    for(; *s; s++) {
+        serial_putchar(*s);
+    }
 }
-

@@ -40,6 +40,6 @@ void serial_isr (void) __interrupt (4);
 //void serial_isr (void) interrupt 4;
 #endif
 void serial_init(void (*callback)(int));
-void serial_putchar(char c);
-void putchar(char c);
+void serial_putchar(char);
+void serial_puts(unsigned char *);
 int serial_getchar(void);
