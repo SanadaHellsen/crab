@@ -8,15 +8,18 @@
 #include "interrupt.h"
 #include "pwm.h"
 
-static unsigned char    pwm;
-static unsigned int     pwm_tw0;
+volatile unsigned char  pwm;
+volatile unsigned int   pwm_tw0;
 static unsigned int     pwm_period;
 static unsigned char    pwm_on;
 
+#ifdef SDCC
+void pwm_isr(void) __interrupt (1)
+#else
 void pwm_isr(void) interrupt 1
+#endif
 {
     TR0 = 0;
-
 
     PWMb = !pwm;
     

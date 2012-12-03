@@ -12,7 +12,7 @@
 #define SMODE_2     (SMOD_SM0b)
 #define SMODE_3     (SMOD_SM0b|SMOD_SM1b)
 
-#define S1N8        (SMODE_1|SMOD_TB8b)
+#define S1N8        (SMODE_1)
 #define SINIT       (SMOD_RENb)
 
 /*
@@ -33,10 +33,6 @@ Fosc (MHz) 11.0592
   */
 
 #define SBR_9600    (0xfd)
-#define SBUFN   (25)
-
-extern volatile char serial_buf[2][SBUFN];
-extern volatile int  serial_i[2];
 
 #ifdef SDCC
 void serial_isr (void) __interrupt (4);
@@ -45,4 +41,5 @@ void serial_isr (void) __interrupt (4);
 #endif
 void serial_init(void (*callback)(int));
 void serial_putchar(char c);
+void putchar(char c);
 int serial_getchar(void);

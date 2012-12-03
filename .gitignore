@@ -13,6 +13,7 @@
 
 # Executables
 *.exe
+
 *.out
 *.app
 *.plg
@@ -27,3 +28,12 @@ Crab
 *.SRC
 *._ia
 *.hex
+*.asm
+*.lk
+*.lst
+*.map
+*.mem
+*.rel
+*.rst
+*.sym
+pty

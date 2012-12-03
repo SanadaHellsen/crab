@@ -1,14 +1,20 @@
 .PHONY: clean
 .SUFFIXES: .c .rel
 
-OBJS= serial.rel pwm.rel main.rel
+CC= sdcc
+CFLAGS= -mmcs51
+
+OBJS= adc.rel main.rel pid.rel pwm.rel serial.rel
 TARGET= crab
 
 .c.rel:
-	sdcc -mmcs51 -c $<
+	$(CC) $(CFLAGS) -c $<
 
-$(TARGET).hex: $(OBJS)
-	sdcc -mmcs51 $(OBJS) -o $(TARGET)-i.hex
+$(TARGET).hex: $(OBJS) delay.rel
+	$(CC) $(CFLAGS) $(OBJS) delay.rel -o $(TARGET)-i.hex
 	packihx $(TARGET)-i.hex > $(TARGET).hex
+delay.rel:
+	sdas8051 -plosgffw delay.rel delay-sdcc.asm
 clean:
-	rm *.asm *.hex *.ihx *.lk *.lst *.map *.mem *.rel *.rst *.sym
+	rm *.hex *.ihx *.lk *.lst *.map *.mem *.rel *.rst *.sym adc.asm \
+		main.asm pid.asm pwm.asm serial.asm

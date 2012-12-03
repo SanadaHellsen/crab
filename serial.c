@@ -7,11 +7,8 @@
 #include "interrupt.h"
 #include "serial.h"
 
-volatile char serial_buf[2][SBUFN];
-volatile int  serial_i[2];
-volatile char sr;
-volatile char st;
 static void (*s_callback)(int);
+volatile unsigned char serial_tx = 0;
 
 #ifdef SDCC
 void serial_isr (void) __interrupt (4)
@@ -21,14 +18,12 @@ void serial_isr (void) interrupt 4
 {
     if(RI) {
         RI = 0;
-        sr =  SBUF;
-        (*s_callback)((int)sr);
-    } else {
-        if(serial_i[1] > 0) {
-            //SBUF = serial_buf[1][0];
-            serial_i[1]--;
-        }
+        (*s_callback)((int)SBUF);
+    }
+
+    if(TI) {
         TI = 0;
+        serial_tx = 0;
     }
 }
 
@@ -42,8 +37,11 @@ void serial_init(void (*callback)(int))
     TH1 =   SBR_9600;
     TL1 =   SBR_9600;
     ES  =   1;
-    ET1 = 0;
+    ET1 =   0;
     EA  =   1;
+
+    TI  =   0;
+    RI  =   0;
 
     s_callback = callback;
     
@@ -53,22 +51,22 @@ void serial_init(void (*callback)(int))
 int serial_getchar(void)
 {
     char c;
-
     while(!RI);
     c = SBUF;
-
     return (int)c;
 }
 
 void serial_putchar(char c)
 {
-    int k = 1;
-    serial_i[1]++;
-    serial_buf[1][0] = c;
-    SBUF = serial_buf[1][0];
-    TI = 1;
-    while(k++) {
-        if(!TI) break;
-    }
+    serial_tx = 1;
+    SBUF = c;
+    while(serial_tx);
+}
+
+void putchar(char c)
+{
+    serial_tx = 1;
+    SBUF = c;
+    while(serial_tx);
 }
 

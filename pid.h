@@ -22,6 +22,6 @@ typedef struct pid_pair {
     enum pid_key sym;
 } pid_pair_t;
 
-void pid_init(pid_t *);
-signed int pid_process(pid_t *, signed int);
-void pid_tune(pid_t *, char *key, char *value);
+void pid_init();
+signed int pid_process(signed int);
+void pid_tune(char *key, char *value);
