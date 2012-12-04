@@ -25,12 +25,11 @@ typedef struct cmd {
 } cmd_t;
 
 #define BUFLEN 16
-static decimal_t adc_k  = {1, 1};
 static cmd_t cmd;
 volatile unsigned char serial_rx = 0;
 volatile unsigned char bi = 0;
 volatile unsigned char buffer[BUFLEN];
-static unsigned char *msg_ok = "OK\r\n";
+static unsigned char msg_ok[] = "OK\r\n";
 
 void command_execute(char *);
 unsigned char command_parse(char *);
@@ -108,8 +107,8 @@ void serial_cb(int c) {
 
 void main(void)
 {
-    unsigned char adc_v;
-    signed int pid_v, pid_y;
+    unsigned char adc_value;
+    signed int pid_output;
     
     /*
     666
@@ -133,9 +132,8 @@ void main(void)
             serial_rx = 0;
         }
 
-        adc_v = adc_read();
-        pid_v = (adc_k.n * adc_v) / adc_k.d;
-        pid_y = pid_process(pid_v);
-        pwm_start(666 + pid_y);
+        adc_value = adc_read();
+        pid_output = pid_process(adc_value);
+        pwm_start(666 + pid_output);
     }
 }

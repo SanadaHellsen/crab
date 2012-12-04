@@ -40,14 +40,12 @@ signed int pid_process(signed int measured_value)
 
     pid.previous_error = error;        
     
-    delay_1ms();
+    delay_1ms(); // delay_ms(pid.dt.d)
     
     return output;
 }
 
 void pid_tune(char *key, char *value) {
-    char buf[4];
-
     if(key[0] == 'S' && key[1] == 'P') {
         pid.setpoint = atoi(value);
     } else
