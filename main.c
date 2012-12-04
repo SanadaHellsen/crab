@@ -84,7 +84,6 @@ void command_execute(char *string)
     case PID_CMD:
         pid_tune(cmd.key, cmd.value);
         break;
-    default:
     }
 }
 
