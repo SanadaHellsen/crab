@@ -14,7 +14,7 @@ $(TARGET).hex: $(OBJS) delay.rel
 	$(CC) $(CFLAGS) $(OBJS) delay.rel -o $(TARGET)-i.hex
 	packihx $(TARGET)-i.hex > $(TARGET).hex
 delay.rel:
-	sdas8051 -plosgffw delay.rel delay-sdcc.asm
+	sdas8051 -plosgffw delay.rel delay-sdcc.a51
 clean:
-	rm *.hex *.ihx *.lk *.lst *.map *.mem *.rel *.rst *.sym adc.asm \
-		main.asm pid.asm pwm.asm serial.asm
+	rm *.hex *.ihx *.lk *.lst *.map *.mem *.rel \
+	*.rst *.sym *.asm 

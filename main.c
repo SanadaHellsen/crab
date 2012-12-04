@@ -8,6 +8,7 @@
 #include "types.h"
 
 #include "adc.h"
+#include "delay.h"
 #include "pid.h"
 #include "pwm.h"
 #include "serial.h"
@@ -23,17 +24,17 @@ typedef struct cmd {
     unsigned char key[7];
     unsigned char value[7];
 } cmd_t;
-
+/*
 #define BUFLEN 16
 static cmd_t cmd;
 volatile unsigned char serial_rx = 0;
 volatile unsigned char bi = 0;
-volatile unsigned char buffer[BUFLEN];
+volatile unsigned char buffer[BUFLEN];*/
 static unsigned char msg_ok[] = "OK\r\n";
 
 void command_execute(char *);
 unsigned char command_parse(char *);
-
+/*
 unsigned char command_parse(char *string)
 {
     unsigned char i;
@@ -85,8 +86,8 @@ void command_execute(char *string)
         pid_tune(cmd.key, cmd.value);
         break;
     }
-}
-
+}*/
+/*
 void serial_cb(int c) {
 
     if(bi >= BUFLEN) {
@@ -103,36 +104,38 @@ void serial_cb(int c) {
         bi++;
     }
 }
-
+*/
 void main(void)
 {
     unsigned char adc_value;
     signed int pid_output;
     
-    /*
-    666
-    800
-    571
-    */
-    // 1/0.02ms = 50 // PWM
-
+/*
     adc_init();
-    pid_init();
-    pwm_init(50);
-    serial_init(serial_cb);
+    pid_init();*/
+    pwm_init(18432);
+    /*serial_init(serial_cb);*/
     
-    serial_puts(msg_ok);
+    /*serial_puts(msg_ok);*/
 
-    pwm_start(666);
-    
+    pwm_start(1843);
+        
     while(1) {
-        if(serial_rx) {
+        /*if(serial_rx) {
             command_execute(buffer);
             serial_rx = 0;
-        }
+        }*/
 
-        adc_value = adc_read();
-        pid_output = pid_process(adc_value);
-        pwm_start(666 + pid_output);
+        P0_1 = 1;
+        delay_ms(1000);
+        P0_1 = 0;
+        delay_ms(1000);
+        P0_1 = 1;
+        delay_ms(2000);
+        P0_1 = 0;
+        delay_ms(2000);
+        /*adc_value = adc_read();
+        pid_output = pid_process(adc_value);*/
+        /*pwm_start(666 + pid_output);*/
     }
 }

@@ -18,7 +18,7 @@ void pid_init(void)
     pid.ki.d = 1;
     pid.kd.n = 1;
     pid.kd.d = 1;
-    pid.dt.n = 1;
+    pid.dt.n = 100;
     pid.dt.d = 1;
 }
 

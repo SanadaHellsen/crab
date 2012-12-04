@@ -37,7 +37,7 @@ Fosc (MHz) 11.0592
 #ifdef SDCC
 void serial_isr (void) __interrupt (4);
 #else
-//void serial_isr (void) interrupt 4;
+void serial_isr (void);
 #endif
 void serial_init(void (*callback)(int));
 void serial_putchar(char);
