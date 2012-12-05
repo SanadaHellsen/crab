@@ -1,3 +1,6 @@
+#define PID_INTEGRAL_MAX  10000
+#define PID_INTEGRAL_MIN -10000
+
 typedef struct pid {
     signed int  setpoint;
     signed int  previous_error;

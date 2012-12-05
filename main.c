@@ -4,7 +4,6 @@
 #include <regx51.h>
 #endif
 
-//#include <string.h>
 #include "types.h"
 
 #include "adc.h"
@@ -12,6 +11,7 @@
 #include "pid.h"
 #include "pwm.h"
 #include "serial.h"
+#include "string.h"
 
 enum cmd_type {
     PID_CMD,
@@ -37,7 +37,6 @@ unsigned char command_parse(char *);
 
 unsigned char command_parse(char *string)
 {
-    unsigned char i;
     unsigned char *key, *value, *p;
     
     // HHTKKK...=VVV...
@@ -45,40 +44,33 @@ unsigned char command_parse(char *string)
     cmd.header[1] = string[1];
     cmd.header[2] = '\0';
     
-    if(!(cmd.header[0] == 'S' &&
-        cmd.header[1] == 'B')) {
+    if(!(cmd.header[0] == 'S' && cmd.header[1] == 'B')) {
         return 0;
     }
-    
+    /*if(0 != memcmp_(cmd.header, "SB", 3)) {
+        return 0;
+    }*/
+    /*
     switch(string[2]) {
     case 'P':
         cmd.type = PID_CMD;
         break;
     default:
         cmd.type = UNKNOWN_CMD;
-    }
+        return 0;
+    }*/
     
     key = &string[3];
     value = key;
-    i = 0;
-    while(*value && *value != '=' && i < sizeof(cmd.key)) {
+    while(*value && *value != '=') {
         value++;
     }
     *value = '\0';
     value++;
     
-    p = key;
-    while(*p) {
-        cmd.key[p - key] = *p;
-    }
-    cmd.key[sizeof(cmd.key)-1] = '\0';
+    strcpy_(cmd.key, key);
+    strcpy_(cmd.value, value);
     
-    p = value;
-    while(*p) {
-        cmd.value[p - value] = *p;
-    }
-    cmd.value[sizeof(cmd.value)-1] = '\0';
-
     return 1;
 }
 
@@ -90,11 +82,11 @@ void command_execute(char *string)
     
     serial_puts(msg_ok);
 
-    switch(cmd.type) {
-    case PID_CMD:
+    /*switch(cmd.type) {
+    case PID_CMD:*/
         pid_tune(cmd.key, cmd.value);
-        break;
-    }
+        /*break;
+    }*/
 }
 
 void serial_cb(int c) {
@@ -119,34 +111,19 @@ void main(void)
     unsigned char adc_value;
     signed int pid_output;
     
-
     adc_init();
     pid_init();
     pwm_init(18432);
     serial_init(serial_cb);
     
-    serial_puts(msg_ok);
-
     pwm_start(1843);
+    serial_puts(msg_ok);
 
     while(1) {
         if(serial_rx) {
             command_execute(buffer);
             serial_rx = 0;
         }
-
-        P0 = 0xff;
-        P3_7 = 0;
-        delay_ms(1000);
-        P0 = 0;
-        P3_7 = 1;
-        delay_ms(1000);
-        P0 = 0xff;
-        P3_7 = 0;
-        delay_ms(2000);
-        P0 = 0;
-        P3_7 = 1;
-        delay_ms(2000);
 
         adc_value = adc_read();
         pid_output = pid_process(adc_value);

@@ -18,8 +18,8 @@ void pid_init(void)
     pid.ki.d = 1;
     pid.kd.n = 1;
     pid.kd.d = 1;
-    pid.dt.n = 100;
-    pid.dt.d = 1;
+    pid.dt.n = 1;
+    pid.dt.d = 1000;
 }
 
 signed int pid_process(signed int measured_value)
@@ -29,7 +29,14 @@ signed int pid_process(signed int measured_value)
     signed int derivative;
         
     error = pid.setpoint - measured_value;
+    
     pid.integral += (pid.dt.n * error) / pid.dt.d;
+    if(pid.integral > PID_INTEGRAL_MAX) {
+        pid.integral = PID_INTEGRAL_MAX;
+    } else if(pid.integral < PID_INTEGRAL_MIN) {
+        pid.integral = PID_INTEGRAL_MIN;
+    }
+    
     derivative = (pid.dt.d * (error - pid.previous_error)
                     ) / pid.dt.n;
     
@@ -46,19 +53,43 @@ signed int pid_process(signed int measured_value)
 }
 
 void pid_tune(char *key, char *value) {
+    unsigned char *p = value;
+    unsigned char s = 0;
+    
+    while(*p && *p != '/') p++;
+    
+    if(*p == '/') {
+        s = 1;
+        
+        *p = '\0';
+        p++;
+    }
+    
     if(key[0] == 'S' && key[1] == 'P') {
         pid.setpoint = atoi(value);
     } else
     if(key[0] == 'K' && key[1] == 'P') {
         pid.kp.n = atoi(value);
+        if(s) {
+            pid.kp.d = atoi(p);
+        }
     } else
     if(key[0] == 'K' && key[1] == 'I') {
         pid.ki.n = atoi(value);
+        if(s) {
+            pid.ki.d = atoi(p);
+        }        
     } else
     if(key[0] == 'K' && key[1] == 'D') {
         pid.kd.n = atoi(value);
+        if(s) {
+            pid.kd.d = atoi(p);
+        }        
     } else
     if(key[0] == 'D' && key[1] == 'T') {
-        pid.dt.d = atoi(value);
+        pid.dt.n = atoi(value);
+        if(s) {
+            pid.kp.d = atoi(p);
+        }        
     }
 }
