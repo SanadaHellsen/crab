@@ -4,7 +4,7 @@
 #include <regx51.h>
 #endif
 
-#include <string.h>
+//#include <string.h>
 #include "types.h"
 
 #include "adc.h"
@@ -24,27 +24,29 @@ typedef struct cmd {
     unsigned char key[7];
     unsigned char value[7];
 } cmd_t;
-/*
+
 #define BUFLEN 16
 static cmd_t cmd;
 volatile unsigned char serial_rx = 0;
 volatile unsigned char bi = 0;
-volatile unsigned char buffer[BUFLEN];*/
+volatile unsigned char buffer[BUFLEN];
 static unsigned char msg_ok[] = "OK\r\n";
 
 void command_execute(char *);
 unsigned char command_parse(char *);
-/*
+
 unsigned char command_parse(char *string)
 {
     unsigned char i;
-    unsigned char *key, *value;
+    unsigned char *key, *value, *p;
     
     // HHTKKK...=VVV...
-    memcpy(cmd.header, string, 2);
+    cmd.header[0] = string[0];
+    cmd.header[1] = string[1];
     cmd.header[2] = '\0';
     
-    if(strcmp(cmd.header, "SB")) {
+    if(!(cmd.header[0] == 'S' &&
+        cmd.header[1] == 'B')) {
         return 0;
     }
     
@@ -65,9 +67,16 @@ unsigned char command_parse(char *string)
     *value = '\0';
     value++;
     
-    strncpy(cmd.key, key, sizeof(cmd.key));
+    p = key;
+    while(*p) {
+        cmd.key[p - key] = *p;
+    }
     cmd.key[sizeof(cmd.key)-1] = '\0';
-    strncpy(cmd.value, value, sizeof(cmd.value));
+    
+    p = value;
+    while(*p) {
+        cmd.value[p - value] = *p;
+    }
     cmd.value[sizeof(cmd.value)-1] = '\0';
 
     return 1;
@@ -86,8 +95,8 @@ void command_execute(char *string)
         pid_tune(cmd.key, cmd.value);
         break;
     }
-}*/
-/*
+}
+
 void serial_cb(int c) {
 
     if(bi >= BUFLEN) {
@@ -104,38 +113,43 @@ void serial_cb(int c) {
         bi++;
     }
 }
-*/
+
 void main(void)
 {
     unsigned char adc_value;
     signed int pid_output;
     
-/*
+
     adc_init();
-    pid_init();*/
+    pid_init();
     pwm_init(18432);
-    /*serial_init(serial_cb);*/
+    serial_init(serial_cb);
     
-    /*serial_puts(msg_ok);*/
+    serial_puts(msg_ok);
 
     pwm_start(1843);
-        
+
     while(1) {
-        /*if(serial_rx) {
+        if(serial_rx) {
             command_execute(buffer);
             serial_rx = 0;
-        }*/
+        }
 
-        P0_1 = 1;
+        P0 = 0xff;
+        P3_7 = 0;
         delay_ms(1000);
-        P0_1 = 0;
+        P0 = 0;
+        P3_7 = 1;
         delay_ms(1000);
-        P0_1 = 1;
+        P0 = 0xff;
+        P3_7 = 0;
         delay_ms(2000);
-        P0_1 = 0;
+        P0 = 0;
+        P3_7 = 1;
         delay_ms(2000);
-        /*adc_value = adc_read();
-        pid_output = pid_process(adc_value);*/
-        /*pwm_start(666 + pid_output);*/
+
+        adc_value = adc_read();
+        pid_output = pid_process(adc_value);
+        pwm_start(1382 + pid_output);
     }
 }

@@ -1,6 +1,6 @@
 #define ADCB P2
 #ifdef SDCC
-#define PWMb P0_0
+#define PWMb P1_0
 #else
-sbit PWMb = P0^0;  
+sbit PWMb = P1^0;  
 #endif
