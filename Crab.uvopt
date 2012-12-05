@@ -134,16 +134,31 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGDP51</Key>
-          <Name>(98=655,0,1097,345,0)(82=-1,-1,-1,-1,0)(83=-1,-1,-1,-1,0)(84=597,295,859,420,0)(85=-1,-1,-1,-1,0)(80=-1,-1,-1,-1,0)(91=580,148,844,469,0)(92=-1,-1,-1,-1,0)</Name>
+          <Name>(98=655,0,1097,345,0)(82=-1,-1,-1,-1,0)(83=-1,-1,-1,-1,0)(84=619,370,881,495,1)(85=-1,-1,-1,-1,0)(80=-1,-1,-1,-1,0)(91=580,148,844,469,0)(92=-1,-1,-1,-1,0)</Name>
         </SetRegEntry>
       </TargetDriverDllRegistry>
       <Breakpoint>
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>130</LineNumber>
+          <LineNumber>83</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>-16773848</Address>
+          <Address>-16774967</Address>
+          <ByteObject>0</ByteObject>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>PID.C</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression></Expression>
+        </Bp>
+        <Bp>
+          <Number>1</Number>
+          <Type>0</Type>
+          <LineNumber>129</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>-16773897</Address>
           <ByteObject>0</ByteObject>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
@@ -153,29 +168,7 @@
           <ExecCommand></ExecCommand>
           <Expression></Expression>
         </Bp>
-        <Bp>
-          <Number>1</Number>
-          <Type>0</Type>
-          <LineNumber>59</LineNumber>
-          <EnabledFlag>1</EnabledFlag>
-          <Address>-16773751</Address>
-          <ByteObject>0</ByteObject>
-          <ManyObjects>0</ManyObjects>
-          <SizeOfObject>0</SizeOfObject>
-          <BreakByAccess>0</BreakByAccess>
-          <BreakIfRCount>1</BreakIfRCount>
-          <Filename>PWM.C</Filename>
-          <ExecCommand></ExecCommand>
-          <Expression></Expression>
-        </Bp>
       </Breakpoint>
-      <MemoryWindow1>
-        <Mm>
-          <WinNumber>1</WinNumber>
-          <SubType>4</SubType>
-          <ItemText>D:0x4b</ItemText>
-        </Mm>
-      </MemoryWindow1>
       <DebugFlag>
         <trace>0</trace>
         <periodic>1</periodic>
@@ -227,8 +220,8 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>125</TopLine>
-      <CurrentLine>130</CurrentLine>
+      <TopLine>58</TopLine>
+      <CurrentLine>58</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\main.c</PathWithFileName>
       <FilenameWithoutPath>main.c</FilenameWithoutPath>
@@ -241,7 +234,7 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>35</TopLine>
+      <TopLine>26</TopLine>
       <CurrentLine>38</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\delay-keil.a51</PathWithFileName>
@@ -255,7 +248,7 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>54</TopLine>
+      <TopLine>55</TopLine>
       <CurrentLine>59</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\pwm.c</PathWithFileName>
@@ -281,10 +274,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>22</ColumnNumber>
+      <ColumnNumber>20</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>50</TopLine>
-      <CurrentLine>59</CurrentLine>
+      <TopLine>74</TopLine>
+      <CurrentLine>86</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\pid.c</PathWithFileName>
       <FilenameWithoutPath>pid.c</FilenameWithoutPath>
@@ -309,10 +302,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>3</ColumnNumber>
+      <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>10</TopLine>
-      <CurrentLine>25</CurrentLine>
+      <TopLine>2</TopLine>
+      <CurrentLine>8</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>.\string.c</PathWithFileName>
       <FilenameWithoutPath>string.c</FilenameWithoutPath>
@@ -480,30 +473,30 @@
     <ActiveMDIGroup>0</ActiveMDIGroup>
     <MDIGroup>
       <Size>100</Size>
-      <ActiveTab>1</ActiveTab>
+      <ActiveTab>2</ActiveTab>
       <Documents>
         <Doc>
           <Name>.\pwm.c</Name>
           <ColumnNumber>0</ColumnNumber>
-          <TopLine>54</TopLine>
+          <TopLine>55</TopLine>
           <CurrentLine>59</CurrentLine>
         </Doc>
         <Doc>
           <Name>.\pid.c</Name>
-          <ColumnNumber>22</ColumnNumber>
-          <TopLine>50</TopLine>
-          <CurrentLine>59</CurrentLine>
+          <ColumnNumber>20</ColumnNumber>
+          <TopLine>74</TopLine>
+          <CurrentLine>86</CurrentLine>
         </Doc>
         <Doc>
           <Name>.\main.c</Name>
           <ColumnNumber>0</ColumnNumber>
-          <TopLine>125</TopLine>
-          <CurrentLine>130</CurrentLine>
+          <TopLine>58</TopLine>
+          <CurrentLine>58</CurrentLine>
         </Doc>
         <Doc>
           <Name>.\delay-keil.a51</Name>
           <ColumnNumber>0</ColumnNumber>
-          <TopLine>35</TopLine>
+          <TopLine>26</TopLine>
           <CurrentLine>38</CurrentLine>
         </Doc>
         <Doc>
@@ -526,9 +519,9 @@
         </Doc>
         <Doc>
           <Name>.\string.c</Name>
-          <ColumnNumber>3</ColumnNumber>
-          <TopLine>10</TopLine>
-          <CurrentLine>25</CurrentLine>
+          <ColumnNumber>0</ColumnNumber>
+          <TopLine>2</TopLine>
+          <CurrentLine>8</CurrentLine>
         </Doc>
         <Doc>
           <Name>io.h</Name>
