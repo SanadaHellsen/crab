@@ -13,7 +13,7 @@
 #include "serial.h"
 #include "string.h"
 
-#define BUFLEN 16
+#define BUFLEN 12
 #define SERVO_PER 18432 // 50 Hz
 #define SERVO_MIN 922
 #define SERVO_MAX 1843
@@ -27,7 +27,7 @@ enum cmd_type {
 typedef struct cmd {
     unsigned char header[3];
     enum cmd_type type;
-    unsigned char key[7];
+    unsigned char key[3];
     unsigned char value[7];
 } cmd_t;
 
@@ -36,7 +36,8 @@ static cmd_t cmd;
 volatile unsigned char serial_rx = 0;
 volatile unsigned char bi = 0;
 volatile unsigned char buffer[BUFLEN];
-static unsigned char msg_ok[] = "OK\r\n";
+static unsigned char msg_ok[] = "OK";
+static unsigned char msg_error[] = "ERROR";
 
 void command_execute(char *);
 unsigned char command_parse(char *);
@@ -57,14 +58,14 @@ unsigned char command_parse(char *string)
         return 0;
     }*/
     
-    switch(string[2]) {
-    case 'P':
-        cmd.type = PID_CMD;
-        break;
-    default:
-        cmd.type = UNKNOWN_CMD;
-        return 0;
-    }
+    //switch(string[2]) {
+    //case 'P':
+    //    cmd.type = PID_CMD;
+    //    break;
+    //default:
+    //    cmd.type = UNKNOWN_CMD;
+    //    return 0;
+   // }
     
     key = &string[3];
     value = key;
@@ -74,7 +75,7 @@ unsigned char command_parse(char *string)
     *value = '\0';
     value++;
     
-    //strcpy_(cmd.key, key);
+    strcpy_(cmd.key, key);
     strcpy_(cmd.value, value);
     
     return 1;
@@ -83,20 +84,25 @@ unsigned char command_parse(char *string)
 void command_execute(char *string)
 {
     if(!command_parse(string)) {
+        serial_puts(msg_error);
         return;
     }
     
     serial_puts(msg_ok);
 
-    switch(cmd.type) {
-    case PID_CMD:
+   // switch(cmd.type) {
+   // case PID_CMD:
         pid_tune(cmd.key, cmd.value);
-        break;
-    }
+   //     break;
+   // }
 }
 
 void serial_cb(int c) {
 
+    if(serial_rx) {
+        return;
+    }
+    
     if(bi >= BUFLEN) {
         bi = 0;
     }
@@ -128,7 +134,6 @@ void main(void)
     while(1) {
         if(serial_rx) {
             serial_puts(buffer);
-            serial_puts("\r\n");
             command_execute(buffer);
             serial_rx = 0;
         }

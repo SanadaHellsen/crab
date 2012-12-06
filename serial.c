@@ -9,6 +9,7 @@
 
 static void (*s_callback)(int);
 volatile unsigned char serial_tx = 0;
+static unsigned char serial_crlf[] = "\r\n";
 
 #ifdef SDCC
 void serial_isr (void) __interrupt (4)
@@ -65,6 +66,11 @@ void serial_putchar(char c)
 
 void serial_puts(unsigned char *s)
 {
+    for(; *s; s++) {
+        serial_putchar(*s);
+    }
+    
+    s = serial_crlf;
     for(; *s; s++) {
         serial_putchar(*s);
     }

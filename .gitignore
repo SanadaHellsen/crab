@@ -37,3 +37,4 @@ Crab
 *.rst
 *.sym
 pty
+*.uvopt

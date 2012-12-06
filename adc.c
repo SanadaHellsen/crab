@@ -5,11 +5,15 @@
 #endif
 
 #include "io.h"
+#include "delay.h"
 
 void adc_init(void) {
-    ADCB = 0xff; // Set port as input
+    ADC_DB = 0xff; // Set port as input
+    ADC_INTRb = 0;
+    delay_1ms();
+    ADC_INTRb = 1;
 }
 
 unsigned char adc_read(void) {
-    return ADCB;
+    return ADC_DB;
 }
