@@ -13,6 +13,12 @@
 #include "serial.h"
 #include "string.h"
 
+#define BUFLEN 16
+#define SERVO_PER 18432 // 50 Hz
+#define SERVO_MIN 922
+#define SERVO_MAX 1843
+#define SERVO_MID 1382
+
 enum cmd_type {
     PID_CMD,
     UNKNOWN_CMD
@@ -25,7 +31,7 @@ typedef struct cmd {
     unsigned char value[7];
 } cmd_t;
 
-#define BUFLEN 16
+
 static cmd_t cmd;
 volatile unsigned char serial_rx = 0;
 volatile unsigned char bi = 0;
@@ -37,7 +43,7 @@ unsigned char command_parse(char *);
 
 unsigned char command_parse(char *string)
 {
-    unsigned char *key, *value, *p;
+    unsigned char *key, *value;
     
     // HHTKKK...=VVV...
     cmd.header[0] = string[0];
@@ -50,7 +56,7 @@ unsigned char command_parse(char *string)
     /*if(0 != memcmp_(cmd.header, "SB", 3)) {
         return 0;
     }*/
-    /*
+    
     switch(string[2]) {
     case 'P':
         cmd.type = PID_CMD;
@@ -58,7 +64,7 @@ unsigned char command_parse(char *string)
     default:
         cmd.type = UNKNOWN_CMD;
         return 0;
-    }*/
+    }
     
     key = &string[3];
     value = key;
@@ -68,7 +74,7 @@ unsigned char command_parse(char *string)
     *value = '\0';
     value++;
     
-    strcpy_(cmd.key, key);
+    //strcpy_(cmd.key, key);
     strcpy_(cmd.value, value);
     
     return 1;
@@ -82,11 +88,11 @@ void command_execute(char *string)
     
     serial_puts(msg_ok);
 
-    /*switch(cmd.type) {
-    case PID_CMD:*/
+    switch(cmd.type) {
+    case PID_CMD:
         pid_tune(cmd.key, cmd.value);
-        /*break;
-    }*/
+        break;
+    }
 }
 
 void serial_cb(int c) {
@@ -109,24 +115,34 @@ void serial_cb(int c) {
 void main(void)
 {
     unsigned char adc_value;
-    signed int pid_output;
+    signed int pid_output, pwm_value;
     
     adc_init();
     pid_init();
-    pwm_init(18432);
+    pwm_init(SERVO_PER);
     serial_init(serial_cb);
     
-    pwm_start(1843);
+    pwm_start(SERVO_MIN);
     serial_puts(msg_ok);
 
     while(1) {
         if(serial_rx) {
+            serial_puts(buffer);
+            serial_puts("\r\n");
             command_execute(buffer);
             serial_rx = 0;
         }
 
         adc_value = adc_read();
         pid_output = pid_process(adc_value);
-        pwm_start(1382 + pid_output);
+        pwm_value = SERVO_MID + pid_output;
+        
+        if(pwm_value > SERVO_MAX) {
+            pwm_value = SERVO_MAX;
+        } else if(pwm_value < SERVO_MIN) {
+            pwm_value = SERVO_MIN;
+        }
+        
+        pwm_start((unsigned int)pwm_value);
     }
 }
