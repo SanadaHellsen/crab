@@ -43,3 +43,13 @@ void serial_init(void (*callback)(int));
 void serial_putchar(char);
 void serial_puts(unsigned char *);
 int serial_getchar(void);
+
+#define SERIAL_PUTCHAR(x) do { \
+                            serial_tx = 1; \
+                            SBUF = x; \
+                            while(serial_tx); \
+                            } while(0)
+
+extern unsigned char code msg_ok[];
+extern unsigned char code msg_error[];
+extern unsigned char code serial_crlf[];

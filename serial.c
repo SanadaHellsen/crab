@@ -4,12 +4,18 @@
 #include <regx51.h>
 #endif
 
+#include "config.h"
+#include "types.h"
+
 #include "interrupt.h"
 #include "serial.h"
 
 static void (*s_callback)(int);
 volatile unsigned char serial_tx = 0;
-static unsigned char serial_crlf[] = "\r\n";
+
+unsigned char code msg_ok[] = MSG_OK;
+unsigned char code msg_error[] = MSG_ERROR;
+//unsigned char code serial_crlf[] = "\r\n";
 
 #ifdef SDCC
 void serial_isr (void) __interrupt (4)
@@ -20,9 +26,7 @@ void serial_isr (void) interrupt 4
     if(RI) {
         RI = 0;
         (*s_callback)((int)SBUF);
-    }
-
-    if(TI) {
+    } else {
         TI = 0;
         serial_tx = 0;
     }
@@ -37,12 +41,9 @@ void serial_init(void (*callback)(int))
 
     TH1 =   SBR_9600;
     TL1 =   SBR_9600;
-    ES  =   1;
-    ET1 =   0;
-    EA  =   1;
 
-    TI  =   0;
-    RI  =   0;
+    IE |=  (IE_ESb|IE_EAb);
+    IE &= ~(IE_ET1b);
 
     s_callback = callback;
     
@@ -51,10 +52,8 @@ void serial_init(void (*callback)(int))
 
 int serial_getchar(void)
 {
-    char c;
     while(!RI);
-    c = SBUF;
-    return (int)c;
+    return (int)SBUF;
 }
 
 void serial_putchar(char c)
@@ -70,8 +69,11 @@ void serial_puts(unsigned char *s)
         serial_putchar(*s);
     }
     
-    s = serial_crlf;
+    /*s = serial_crlf;
     for(; *s; s++) {
         serial_putchar(*s);
-    }
+    }*/
+    
+    serial_putchar('\r');
+    serial_putchar('\n');
 }

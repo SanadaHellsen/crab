@@ -382,6 +382,11 @@
               <FileType>1</FileType>
               <FilePath>.\string.c</FilePath>
             </File>
+            <File>
+              <FileName>cmd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\cmd.c</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>

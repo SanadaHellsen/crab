@@ -7,19 +7,24 @@ void strcpy_(char *dst, char *src)
 	}
     *dst = '\0';
 }
-/*
-int memcmp_(char *s1, char *s2, unsigned char n)
-{
-    int r = 0;
+
+int atoi_(char *s) {
+    int acc = 0;
     
-    for(; n > 0; n--) {
-        r += *s1 - *s2;
-        if(r > 0) {
-            break;
-        }
-        s1++;
-        s2++;
+    for(; *s; s++) {
+        acc = 10 * acc + *s - '0';
     }
     
-    return r;
-}*/
+    return acc;
+}
+
+int memcmp_(char *s1, char *s2, unsigned char n)
+{
+    for(; n > 0; n--, s1++, s2++) {
+        if((*s1 - *s2) > 0) {
+            return 1;
+        }
+    }
+    
+    return 0;
+}

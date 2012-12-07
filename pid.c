@@ -1,9 +1,8 @@
-#include <string.h>
-#include <stdlib.h>
 #include "types.h"
 #include "delay.h"
 #include "pid.h"
 #include "serial.h"
+#include "string.h"
 
 static pid_t pid;
 
@@ -13,13 +12,13 @@ void pid_init(void)
     pid.previous_error = 0;
     pid.integral = 0;
     pid.kp.n = 1;
-    pid.kp.d = 1;
+    pid.kp.d = 10;
     pid.ki.n = 1;
     pid.ki.d = 1;
     pid.kd.n = 1;
     pid.kd.d = 1;
     pid.dt.n = 1;
-    pid.dt.d = 1000;
+    pid.dt.d = 100;
 }
 
 signed int pid_process(signed int measured_value)
@@ -47,7 +46,7 @@ signed int pid_process(signed int measured_value)
 
     pid.previous_error = error;        
     
-    delay_ms(pid.dt.d);
+    delay_ms((1000 * pid.dt.n)/pid.dt.d);
     
     return output;
 }
@@ -66,30 +65,30 @@ void pid_tune(char *key, char *value) {
     }
     
     if(key[0] == 'S' && key[1] == 'P') {
-        pid.setpoint = atoi(value);
+        pid.setpoint = atoi_(value);
     } else
     if(key[0] == 'K' && key[1] == 'P') {
-        pid.kp.n = atoi(value);
+        pid.kp.n = atoi_(value);
         if(s) {
-            pid.kp.d = atoi(p);
+            pid.kp.d = atoi_(p);
         }
     } else
     if(key[0] == 'K' && key[1] == 'I') {
-        pid.ki.n = atoi(value);
+        pid.ki.n = atoi_(value);
         if(s) {
-            pid.ki.d = atoi(p);
+            pid.ki.d = atoi_(p);
         }        
     } else
     if(key[0] == 'K' && key[1] == 'D') {
-        pid.kd.n = atoi(value);
+        pid.kd.n = atoi_(value);
         if(s) {
-            pid.kd.d = atoi(p);
+            pid.kd.d = atoi_(p);
         }        
     } else
     if(key[0] == 'D' && key[1] == 'T') {
-        pid.dt.n = atoi(value);
+        pid.dt.n = atoi_(value);
         if(s) {
-            pid.kp.d = atoi(p);
+            pid.kp.d = atoi_(p);
         }        
     }
 }

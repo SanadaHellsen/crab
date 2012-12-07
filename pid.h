@@ -1,5 +1,5 @@
-#define PID_INTEGRAL_MAX  10000
-#define PID_INTEGRAL_MIN -10000
+#define PID_INTEGRAL_MAX  1000
+#define PID_INTEGRAL_MIN -1000
 
 typedef struct pid {
     signed int  setpoint;
@@ -10,7 +10,7 @@ typedef struct pid {
     decimal_t   kd;
     decimal_t   dt;
 } pid_t;
-
+/*
 enum pid_key {
     PID_PSP,
     PID_PKP,
@@ -24,7 +24,7 @@ typedef struct pid_pair {
     unsigned char key[3];
     enum pid_key sym;
 } pid_pair_t;
-
+*/
 void pid_init();
 signed int pid_process(signed int);
 void pid_tune(char *key, char *value);
