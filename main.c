@@ -51,8 +51,7 @@ void main(void)
     pwm_init(SERVO_PER);
     serial_init(serial_cb);
     
-    pwm_value = SERVO_MIN;
-    pwm_start(pwm_value);
+    pwm_start(SERVO_MIN);
     serial_puts(msg_ok);
 
     while(1) {
@@ -61,9 +60,9 @@ void main(void)
             cmd_execute(buffer);
             serial_rx = 0;
         }
+                
+        pwm_value += pid_process(ADC_READ());
 
-        pwm_value -= pid_process(ADC_READ());
-        
         if(pwm_value > SERVO_MAX) {
             pwm_value = SERVO_MAX;
         } else if(pwm_value < SERVO_MIN) {

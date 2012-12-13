@@ -8,7 +8,7 @@ typedef struct pid {
     decimal_t   kp;
     decimal_t   ki;
     decimal_t   kd;
-    decimal_t   dt;
+    unsigned char sense;
 } pid_t;
 /*
 enum pid_key {

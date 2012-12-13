@@ -5,6 +5,7 @@
 enum cmd_type {
     PID_CMD,
     SERVO_CMD,
+    SERVO_CMDT, // Fixme
     UNKNOWN_CMD
 };
 

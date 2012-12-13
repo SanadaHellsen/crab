@@ -29,7 +29,10 @@ unsigned char cmd_parse(char *string)
         break;
     case 'S':
         cmd.type = SERVO_CMD;
-        break;    
+        break;
+    case 'T':
+        cmd.type = SERVO_CMDT;
+        break;
     default:
         cmd.type = UNKNOWN_CMD;
         return 0;
@@ -65,5 +68,8 @@ void cmd_execute(char *string)
     case SERVO_CMD:
         pwm_start(SERVO_MIN);
         break;
+    case SERVO_CMDT:
+        pwm_start(SERVO_MAX);
+        break;        
     }
 }
