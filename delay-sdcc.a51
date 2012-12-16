@@ -16,9 +16,9 @@ _delay_ms:
 _delay_ms_1:			
 	mov r7, a ;1
 _delay_ms_2:
-	mov r5, #3eh		;1
+	mov r5, 0x3e ;1
 _delay_ms_3:
-	mov r4, #0ah	;1
+	mov r4, 0xa	;1
 _delay_ms_4:
 	djnz r4, _delay_ms_4 ;2
 	djnz r5, _delay_ms_3 ;2
